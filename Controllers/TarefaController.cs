@@ -18,10 +18,15 @@ namespace TrilhaApiDesafio.Controllers
         [HttpGet("{id}")]
         public IActionResult ObterPorId(int id)
         {
-            // TODO: Buscar o Id no banco utilizando o EF
-            // TODO: Validar o tipo de retorno. Se não encontrar a tarefa, retornar NotFound,
-            // caso contrário retornar OK com a tarefa encontrada
-            return Ok();
+            
+            // Consultar Por Id 
+            var tarefa = _context.Tarefas.Find(id);
+            if (tarefa == null)
+            {
+                return NotFound();
+            }
+            return Ok(tarefa);
+
         }
 
         [HttpGet("ObterTodos")]
@@ -59,9 +64,12 @@ namespace TrilhaApiDesafio.Controllers
         public IActionResult Criar(Tarefa tarefa)
         {
             if (tarefa.Data == DateTime.MinValue)
+            {
                 return BadRequest(new { Erro = "A data da tarefa não pode ser vazia" });
-
-            // TODO: Adicionar a tarefa recebida no EF e salvar as mudanças (save changes)
+            }
+            // Adcionar tarefa no banco
+            _context.Add(tarefa);
+            _context.SaveChanges();
             return CreatedAtAction(nameof(ObterPorId), new { id = tarefa.Id }, tarefa);
         }
 
